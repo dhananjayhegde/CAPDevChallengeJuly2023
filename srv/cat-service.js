@@ -11,7 +11,7 @@ const SCOREMAPPING = {
 };
 
 module.exports = class GolfService extends cds.ApplicationService {
-    init() {
+    async init() {
         console.log("reached init...")
         const { Holes } = this.entities
         this.before ('CREATE', Holes, req => {
@@ -21,6 +21,12 @@ module.exports = class GolfService extends cds.ApplicationService {
               const res = req.data.score - req.data.par
               req.data.result = SCOREMAPPING[ res.toString() ]
           }
+        })
+
+        const remote = await cds.connect.to("RemoteService")
+        this.on('*', 'Players', (req) => {
+            console.log(">> delegating to remote service")
+            return remote.run(req.query)
         })
 
         return super.init()
