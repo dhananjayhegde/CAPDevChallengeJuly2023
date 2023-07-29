@@ -1,5 +1,5 @@
 using { golf } from '../db/schema';
-using { RemoteService as external } from '../db/srv/external/RemoteService';
+using { RemoteService as external } from './external/RemoteService';
 
 @impl: 'srv/cat-service.js'
 service CatalogService @(path:'/browse') {

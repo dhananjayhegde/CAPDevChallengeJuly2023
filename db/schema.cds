@@ -3,11 +3,14 @@ using {
     cuid
 } from '@sap/cds/common';
 
+using { RemoteService as external } from '../srv/external/RemoteService';
+
 namespace golf;
 
 entity Rounds: cuid, managed {
   title  : String(50);
   holes: Composition of  many Holes on holes.round = $self;
+  players: Composition of many Round2Players;
 }
 
 entity Holes: cuid {    
@@ -22,4 +25,8 @@ entity Shots: cuid {
   shot_number: Integer @assert.range: [1, 100];
   distance_mtr: Decimal @assert.range: [0, 500];
   hole: Association to one Holes;
+}
+
+aspect Round2Players: cuid {
+  players: Association to one external.Players
 }
