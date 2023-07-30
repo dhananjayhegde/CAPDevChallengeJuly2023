@@ -95,7 +95,7 @@ annotate CatalogService.Holes with @(
         LineItem #HolesTable: [
             {Value: par, Label:'Par'},
             {Value: score, Label:'Score' },
-            {Value: result, Label:'Result' }
+            {Value: result.code, Label:'Result' }
         ],
         
         /**
@@ -105,7 +105,7 @@ annotate CatalogService.Holes with @(
             $Type : 'UI.HeaderInfoType',
             TypeName : 'Hole',
             TypeNamePlural : 'Holes',
-            Title: { Value : result },
+            Title: { Value : result.code },
             Description: { Value: ID }
         },
         
@@ -127,7 +127,7 @@ annotate CatalogService.Holes with @(
             Data : [
                 { Value: par },
                 { Value: score },
-                { Value: result }
+                { Value: result.code }
             ], 
             
         },

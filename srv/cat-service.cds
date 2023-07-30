@@ -12,6 +12,7 @@ service CatalogService @(path:'/browse') {
       Supported,
       ContentIDSupported,
   }
+  @Capabilities.Updatable: true
   entity Rounds as projection on golf.Rounds;
   entity Holes as projection on golf.Holes;
   entity Shots as projection on golf.Shots;

@@ -36,3 +36,15 @@ annotate golf.Shots with {
         title: '{i18n>distance}'
     );
 };
+
+
+annotate golf.Result with {
+    code @( 
+        Common.Text: name,
+        title: '{i18n>Result}',
+        Common.TextArrangement: #TextFirst
+    );
+    name @(title: '{i18n>ResultDescr}');
+    descr @(title: '{i18n>ResultLongDescr}');
+}
+

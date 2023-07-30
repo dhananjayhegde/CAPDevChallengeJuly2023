@@ -1,4 +1,5 @@
 const cds = require('@sap/cds')
+const log = cds.log('exit')
 
 const SCOREMAPPING = {
     "-3": "albatross",
@@ -11,28 +12,45 @@ const SCOREMAPPING = {
 };
 
 const calculateResult = (par, score) => {
-    if( score == 1){
-        return "hole in one"
-    }  else {
-        const res = score - par
-        return SCOREMAPPING[ res.toString() ]
+    if ( score == 1 ){
+        return 100
     }
+
+    let res = score - par;
+    
+    if( res > 3 || res < -3 ) {
+        return 99
+    }
+
+    return res
 }
 
 module.exports = class GolfService extends cds.ApplicationService {
     async init() {
         console.log("reached init...")
-        const { Holes, Rounds } = this.entities
+        const { Holes, Rounds } = this.entities        
         
-        // CREATE by Association Rounds.holes
-        this.before(['CREATE', 'UPDATE'], Rounds.holes, req => {
-            log.info('CBA Rounds.holes', req.data.score, req.data.par)
-            req.data.result = calculateResult(req.data.par, req.data.score)
+        this.before(['CREATE', 'UPDATE'], Rounds, (req) => {
+            log.info('=======> Before CREATE / UPDATE Rounds start')
+            if( req.data.holes ){
+                for( let hole of req.data.holes){
+                    if ( hole.score && hole.par ){
+                        hole.result_code = calculateResult(hole.par, hole.score)
+                        log.info("score", hole.score, "result", hole.result_code)
+                    }
+                }
+            }
+            log.info('=======> Before CREATE / UPDATE Rounds end')
+        })
+
+        // CREATE operation on entiyt Holes
+        this.before ('UPDATE', Holes, req => {          
+            req.data.result_code = calculateResult(req.data.par, req.data.score)
         })
         
         // CREATE operation on entiyt Holes
         this.before ('CREATE', Holes, req => {          
-            req.data.result = calculateResult(req.data.par, req.data.score)
+            req.data.result_code = calculateResult(req.data.par, req.data.score)
         })
 
         const remote = await cds.connect.to("RemoteService")

@@ -1,6 +1,7 @@
 using {
     managed, 
-    cuid
+    cuid,
+    sap
 } from '@sap/cds/common';
 
 using { RemoteService as external } from '../srv/external/RemoteService';
@@ -18,7 +19,9 @@ entity Holes: cuid {
   score: Integer @assert.range: [3, 5]; 
   shots: Composition of many Shots on shots.hole = $self;
   round: Association to one Rounds;
-  result: String;
+  
+  @Core.Computed: true  
+  result: result;
 }
 
 entity Shots: cuid {
@@ -30,3 +33,10 @@ entity Shots: cuid {
 aspect Round2Players: cuid {
   players: Association to one external.Players
 }
+
+entity Result : sap.common.CodeList {
+  key code : Integer;
+}
+
+@assert.target 
+type result : Association to Result;
