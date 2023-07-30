@@ -10,17 +10,29 @@ const SCOREMAPPING = {
     "3" : "triple bogey"
 };
 
+const calculateResult = (par, score) => {
+    if( score == 1){
+        return "hole in one"
+    }  else {
+        const res = score - par
+        return SCOREMAPPING[ res.toString() ]
+    }
+}
+
 module.exports = class GolfService extends cds.ApplicationService {
     async init() {
         console.log("reached init...")
-        const { Holes } = this.entities
-        this.before ('CREATE', Holes, req => {
-          if(req.data.score == 1){
-              req.data.result = "hole in one"
-          } else {
-              const res = req.data.score - req.data.par
-              req.data.result = SCOREMAPPING[ res.toString() ]
-          }
+        const { Holes, Rounds } = this.entities
+        
+        // CREATE by Association Rounds.holes
+        this.before(['CREATE', 'UPDATE'], Rounds.holes, req => {
+            log.info('CBA Rounds.holes', req.data.score, req.data.par)
+            req.data.result = calculateResult(req.data.par, req.data.score)
+        })
+        
+        // CREATE operation on entiyt Holes
+        this.before ('CREATE', Holes, req => {          
+            req.data.result = calculateResult(req.data.par, req.data.score)
         })
 
         const remote = await cds.connect.to("RemoteService")
